@@ -1,0 +1,1058 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>JavaGoat HR</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root{
+      --violet:#7C3AED;
+      --indigo:#4F46E5;
+      --bg:#F7F7FC;
+      --card:#FFFFFF;
+      --text:#111827;
+      --muted:#6B7280;
+      --line:#E5E7EB;
+      --danger:#EF4444;
+      --success:#22C55E;
+      --warning:#F59E0B;
+      --info:#06B6D4;
+      --shadow:0 20px 45px rgba(17,24,39,.08);
+      --radius:22px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+
+    h1,h2,h3,.brand-title{font-family:Sora,Inter,sans-serif}
+    code,.mono{font-family:"JetBrains Mono",monospace}
+
+    .hidden{display:none!important}
+    .app-gradient{background:linear-gradient(135deg,var(--violet),var(--indigo))}
+    .btn{
+      border:0;
+      border-radius:14px;
+      padding:11px 15px;
+      font-weight:800;
+      cursor:pointer;
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      justify-content:center;
+      transition:.2s;
+      background:#fff;
+      color:var(--text);
+      box-shadow:0 8px 18px rgba(17,24,39,.07);
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-primary{background:linear-gradient(135deg,var(--violet),var(--indigo));color:#fff}
+    .btn-danger{background:#FEE2E2;color:#B91C1C}
+    .btn-ghost{background:#F3F4F6;color:#374151;box-shadow:none}
+    .icon-btn{
+      width:36px;height:36px;border:0;border-radius:12px;cursor:pointer;
+      display:inline-flex;align-items:center;justify-content:center;background:#F3F4F6;color:#374151;
+    }
+    .icon-btn:hover{background:#EDE9FE;color:#5B21B6}
+    .icon-btn.danger:hover{background:#FEE2E2;color:#B91C1C}
+
+    input,select,textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 13px;
+      font:inherit;
+      background:#fff;
+      outline:none;
+    }
+    textarea{min-height:90px;resize:vertical}
+    label{font-size:12px;font-weight:800;color:#4B5563;text-transform:uppercase;letter-spacing:.04em}
+    .field{display:flex;flex-direction:column;gap:7px}
+
+    /* Login */
+    #loginView{min-height:100vh;display:grid;grid-template-columns:1.1fr .9fr;background:#fff}
+    .login-art{
+      position:relative;
+      padding:64px;
+      color:#fff;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+    .login-art:before,.login-art:after{
+      content:"";
+      position:absolute;
+      border-radius:999px;
+      background:rgba(255,255,255,.14);
+      filter:blur(1px);
+    }
+    .login-art:before{width:420px;height:420px;right:-90px;top:80px}
+    .login-art:after{width:280px;height:280px;left:70px;bottom:120px}
+    .goat-mark{
+      width:68px;height:68px;border-radius:24px;background:rgba(255,255,255,.18);
+      display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);
+    }
+    .login-art h1{font-size:58px;line-height:1;margin:30px 0 18px;max-width:720px}
+    .login-art p{font-size:18px;line-height:1.7;opacity:.9;max-width:650px}
+    .login-card{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:42px;
+    }
+    .login-form{
+      width:min(440px,100%);
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:30px;
+      box-shadow:var(--shadow);
+      padding:36px;
+    }
+    .login-form h2{margin:0 0 8px;font-size:32px}
+    .login-form .hint{color:var(--muted);margin-bottom:28px}
+
+    /* App shell */
+    #appView{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+    .sidebar{
+      padding:24px 18px;
+      color:#fff;
+      position:sticky;
+      top:0;
+      height:100vh;
+      overflow:auto;
+    }
+    .sidebar-brand{display:flex;align-items:center;gap:12px;margin-bottom:28px;padding:8px}
+    .sidebar-brand .logo{
+      width:46px;height:46px;border-radius:16px;background:rgba(255,255,255,.18);
+      display:flex;align-items:center;justify-content:center;
+    }
+    .sidebar-brand h2{font-size:20px;margin:0}
+    .nav{display:flex;flex-direction:column;gap:8px}
+    .nav button{
+      border:0;
+      background:transparent;
+      color:rgba(255,255,255,.82);
+      padding:13px 14px;
+      border-radius:16px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      gap:11px;
+      font-weight:800;
+      text-align:left;
+    }
+    .nav button.active,.nav button:hover{background:rgba(255,255,255,.18);color:#fff}
+    .logout{margin-top:24px;width:100%;background:rgba(255,255,255,.16);color:#fff}
+
+    .main{padding:28px;overflow:hidden}
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      margin-bottom:24px;
+    }
+    .topbar h1{font-size:32px;margin:0}
+    .topbar p{margin:5px 0 0;color:var(--muted)}
+    .section{display:none}
+    .section.active{display:block}
+
+    .toolbar{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      padding:16px;
+      box-shadow:0 10px 25px rgba(17,24,39,.04);
+      display:grid;
+      grid-template-columns:1.2fr .7fr .7fr auto;
+      gap:12px;
+      margin-bottom:18px;
+      align-items:center;
+    }
+
+    .grid-5{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:18px}
+    .stat{
+      color:#fff;
+      border-radius:24px;
+      padding:20px;
+      min-height:130px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .stat:after{
+      content:"";
+      position:absolute;
+      width:120px;height:120px;border-radius:50%;
+      background:rgba(255,255,255,.2);
+      right:-35px;bottom:-40px;
+    }
+    .stat .value{font-size:34px;font-weight:900;font-family:Sora;margin-top:18px}
+    .stat .label{font-weight:800;opacity:.95}
+    .stat.blue{background:linear-gradient(135deg,#2563EB,#38BDF8)}
+    .stat.green{background:linear-gradient(135deg,#16A34A,#86EFAC)}
+    .stat.orange{background:linear-gradient(135deg,#F97316,#FACC15)}
+    .stat.pink{background:linear-gradient(135deg,#DB2777,#FB7185)}
+    .stat.cyan{background:linear-gradient(135deg,#0891B2,#22D3EE)}
+
+    .panel-grid-3{display:grid;grid-template-columns:1.2fr .8fr 1fr;gap:18px;margin-bottom:18px}
+    .panel-grid-2{display:grid;grid-template-columns:1.3fr .7fr;gap:18px}
+    .panel,.table-wrap{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:0 10px 25px rgba(17,24,39,.04);
+      padding:18px;
+    }
+    .panel h3{margin:0 0 14px;font-size:18px}
+    .chart-box{height:290px;position:relative}
+    .employee-position-list{max-height:290px;overflow:auto;display:flex;flex-direction:column;gap:10px}
+    .mini-person{display:flex;align-items:center;gap:11px;padding:10px;border:1px solid #F3F4F6;border-radius:16px}
+    .avatar{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid #fff;box-shadow:0 6px 14px rgba(17,24,39,.1)}
+    .avatar.sm{width:32px;height:32px}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+      background:#EDE9FE;
+      color:#5B21B6;
+    }
+    .pill.green{background:#DCFCE7;color:#166534}
+    .pill.orange{background:#FFEDD5;color:#9A3412}
+    .pill.pink{background:#FCE7F3;color:#9D174D}
+    .pill.blue{background:#DBEAFE;color:#1D4ED8}
+    .pill.red{background:#FEE2E2;color:#B91C1C}
+    .pill.cyan{background:#CFFAFE;color:#155E75}
+
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:13px 10px;border-bottom:1px solid #F3F4F6;text-align:left;vertical-align:middle}
+    th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#6B7280}
+    td{font-size:14px}
+    .table-actions{display:flex;gap:7px}
+    .empty{text-align:center;padding:34px;color:var(--muted)}
+
+    .modal-backdrop{
+      position:fixed;inset:0;background:rgba(17,24,39,.55);
+      display:flex;align-items:center;justify-content:center;
+      z-index:50;padding:18px;
+    }
+    .modal{
+      width:min(780px,100%);
+      max-height:90vh;
+      overflow:auto;
+      background:#fff;
+      border-radius:28px;
+      box-shadow:0 35px 80px rgba(0,0,0,.28);
+      padding:24px;
+    }
+    .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .modal-head h2{margin:0}
+    .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    .form-grid .full{grid-column:1/-1}
+    .modal-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+
+    .toast{
+      position:fixed;
+      right:22px;
+      bottom:22px;
+      z-index:100;
+      background:#111827;
+      color:#fff;
+      border-radius:16px;
+      padding:14px 16px;
+      box-shadow:var(--shadow);
+      font-weight:800;
+    }
+
+    @media(max-width:1150px){
+      #appView{grid-template-columns:90px 1fr}
+      .sidebar-brand h2,.nav span,.logout span{display:none}
+      .grid-5{grid-template-columns:repeat(2,1fr)}
+      .panel-grid-3,.panel-grid-2{grid-template-columns:1fr}
+      .toolbar{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:760px){
+      #loginView{grid-template-columns:1fr}
+      .login-art{display:none}
+      #appView{grid-template-columns:1fr}
+      .sidebar{position:relative;height:auto}
+      .nav{display:grid;grid-template-columns:repeat(3,1fr)}
+      .main{padding:18px}
+      .grid-5{grid-template-columns:1fr}
+      .toolbar,.form-grid{grid-template-columns:1fr}
+      table{min-width:850px}
+      .table-wrap{overflow:auto}
+    }
+  </style>
+</head>
+
+<body>
+  <div id="loginView">
+    <aside class="login-art app-gradient">
+      <div>
+        <div class="goat-mark"><i data-lucide="coffee"></i></div>
+        <h1>JavaGoat HR</h1>
+        <p>A vibrant, production-ready employee management workspace for teams that move fast: people, departments, attendance, leaves, and payroll in one polished dashboard.</p>
+      </div>
+      <div class="mono">admin@javagoat.hr / password123</div>
+    </aside>
+
+    <main class="login-card">
+      <form class="login-form" id="loginForm">
+        <h2>Welcome back</h2>
+        <div class="hint">Sign in to your HR command center.</div>
+        <div class="field">
+          <label>Email</label>
+          <input id="loginEmail" type="email" value="admin@javagoat.hr" required>
+        </div>
+        <br>
+        <div class="field">
+          <label>Password</label>
+          <input id="loginPassword" type="password" value="password123" required>
+        </div>
+        <br>
+        <button class="btn btn-primary" style="width:100%" type="submit"><i data-lucide="log-in"></i> Login</button>
+      </form>
+    </main>
+  </div>
+
+  <div id="appView" class="hidden">
+    <aside class="sidebar app-gradient">
+      <div class="sidebar-brand">
+        <div class="logo"><i data-lucide="coffee"></i></div>
+        <h2>JavaGoat HR</h2>
+      </div>
+
+      <nav class="nav" id="nav"></nav>
+
+      <button class="btn logout" id="logoutBtn"><i data-lucide="log-out"></i><span>Logout</span></button>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <h1 id="pageTitle">Dashboard</h1>
+          <p id="pageSubtitle">People operations at a glance.</p>
+        </div>
+        <button class="btn btn-primary" id="globalAddBtn"><i data-lucide="plus"></i> Add New</button>
+      </div>
+
+      <section id="dashboard" class="section active">
+        <div class="toolbar">
+          <input id="dashboardSearch" placeholder="Search dashboard employees...">
+          <select id="dashboardStatusFilter"><option value="">All statuses</option><option>Active</option><option>Inactive</option><option>On Leave</option></select>
+          <select id="dashboardDeptFilter"><option value="">All departments</option></select>
+          <button class="btn btn-ghost" onclick="loadDashboard()"><i data-lucide="refresh-cw"></i> Refresh</button>
+        </div>
+
+        <div class="grid-5" id="statCards"></div>
+
+        <div class="panel-grid-3">
+          <div class="panel">
+            <h3>Hiring Trend</h3>
+            <div class="chart-box"><canvas id="hiringChart"></canvas></div>
+          </div>
+          <div class="panel">
+            <h3>Department Mix</h3>
+            <div class="chart-box"><canvas id="deptChart"></canvas></div>
+          </div>
+          <div class="panel">
+            <h3>Employees by Position</h3>
+            <div class="employee-position-list" id="positionEmployeeList"></div>
+          </div>
+        </div>
+
+        <div class="panel-grid-2">
+          <div class="panel">
+            <h3>Attendance Trend</h3>
+            <div class="chart-box"><canvas id="attendanceChart"></canvas></div>
+          </div>
+          <div class="panel">
+            <h3>Status Breakdown</h3>
+            <div class="chart-box"><canvas id="statusChart"></canvas></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="employees" class="section"></section>
+      <section id="departments" class="section"></section>
+      <section id="positions" class="section"></section>
+      <section id="attendance" class="section"></section>
+      <section id="leaves" class="section"></section>
+      <section id="payroll" class="section"></section>
+    </main>
+  </div>
+
+  <div id="modalRoot"></div>
+  <div id="toast" class="toast hidden"></div>
+
+  <script>
+    const API = "";
+    const DEFAULT_AVATAR = "https://api.dicebear.com/7.x/initials/svg?backgroundColor=6D28D9";
+    const routes = [
+      ["dashboard","Dashboard","layout-dashboard","People operations at a glance."],
+      ["employees","Employees","users","Manage employee records and profiles."],
+      ["departments","Departments","building-2","Organize teams and divisions."],
+      ["positions","Positions","badge-check","Assign roles and position ownership."],
+      ["attendance","Attendance","calendar-check","Track daily attendance."],
+      ["leaves","Leaves","plane","Manage time-off requests."],
+      ["payroll","Payroll","wallet","Generate and manage compensation."]
+    ];
+
+    const colors = ["#7C3AED","#22C55E","#F97316","#DB2777","#06B6D4","#2563EB","#F59E0B","#EF4444","#14B8A6"];
+    const pillClasses = ["blue","green","orange","pink","cyan","red"];
+
+    let currentRoute = "dashboard";
+    let cache = { employees:[], departments:[], positions:[], attendance:[], leaves:[], payroll:[] };
+    let charts = {};
+    let editing = null;
+
+    const configs = {
+      departments: {
+        title:"Department",
+        endpoint:"/api/departments",
+        filters:[["name","Department"],["created_at","Created"]],
+        fields:[
+          {name:"name",label:"Name",type:"text",required:true},
+          {name:"description",label:"Description",type:"textarea"}
+        ],
+        columns:[
+          {key:"name",label:"Name"},
+          {key:"description",label:"Description"},
+          {key:"created_at",label:"Created",render:v=>fmtDate(v)}
+        ]
+      },
+      positions: {
+        title:"Position",
+        endpoint:"/api/positions",
+        filters:[["department_id","Department"],["title","Title"]],
+        fields:[
+          {name:"title",label:"Title",type:"text",required:true},
+          {name:"department_id",label:"Department",type:"select",source:"departments",text:"name"},
+          {name:"description",label:"Description",type:"textarea"}
+        ],
+        columns:[
+          {key:"title",label:"Title"},
+          {key:"department_id",label:"Department",render:v=>nameById("departments",v,"name")},
+          {key:"assigned",label:"Assigned Employees",render:(v,row)=>assignedEmployees(row.id)},
+          {key:"description",label:"Description"}
+        ],
+        extraAction:(row)=>`<button class="btn btn-ghost" onclick="openAssignModal(${row.id})"><i data-lucide="user-plus"></i> Assign Employee</button>`
+      },
+      employees: {
+        title:"Employee",
+        endpoint:"/api/employees",
+        filters:[["status","Status"],["department_id","Department"],["position_id","Position"]],
+        fields:[
+          {name:"profile_pic",label:"Profile Picture",type:"file"},
+          {name:"first_name",label:"First Name",type:"text",required:true},
+          {name:"last_name",label:"Last Name",type:"text",required:true},
+          {name:"email",label:"Email",type:"email",required:true},
+          {name:"phone",label:"Phone",type:"text"},
+          {name:"hire_date",label:"Hire Date",type:"date"},
+          {name:"department_id",label:"Department",type:"select",source:"departments",text:"name"},
+          {name:"position_id",label:"Position",type:"select",source:"positions",text:"title"},
+          {name:"salary",label:"Salary",type:"number",step:"0.01"},
+          {name:"status",label:"Status",type:"select",options:["Active","Inactive","On Leave"]}
+        ],
+        columns:[
+          {key:"profile",label:"Employee",render:(v,row)=>employeeCell(row)},
+          {key:"email",label:"Email"},
+          {key:"department_id",label:"Department",render:v=>nameById("departments",v,"name")},
+          {key:"position_id",label:"Position",render:v=>pill(nameById("positions",v,"title") || "Unassigned")},
+          {key:"salary",label:"Salary",render:v=>money(v)},
+          {key:"status",label:"Status",render:v=>statusPill(v)}
+        ]
+      },
+      attendance: {
+        title:"Attendance",
+        endpoint:"/api/attendance",
+        filters:[["status","Status"],["employee_id","Employee"],["date","Date"]],
+        fields:[
+          {name:"employee_id",label:"Employee",type:"select",source:"employees",text:"fullName",required:true},
+          {name:"date",label:"Date",type:"date",required:true},
+          {name:"check_in",label:"Check In",type:"time"},
+          {name:"check_out",label:"Check Out",type:"time"},
+          {name:"status",label:"Status",type:"select",options:["Present","Absent","Late","Remote"]}
+        ],
+        columns:[
+          {key:"employee_id",label:"Employee",render:v=>employeeName(v)},
+          {key:"date",label:"Date",render:v=>fmtDate(v)},
+          {key:"check_in",label:"Check In"},
+          {key:"check_out",label:"Check Out"},
+          {key:"status",label:"Status",render:v=>statusPill(v)}
+        ]
+      },
+      leaves: {
+        title:"Leave",
+        endpoint:"/api/leaves",
+        filters:[["status","Status"],["type","Type"],["employee_id","Employee"]],
+        fields:[
+          {name:"employee_id",label:"Employee",type:"select",source:"employees",text:"fullName",required:true},
+          {name:"type",label:"Type",type:"select",options:["Annual","Sick","Personal","Unpaid","Maternity","Paternity"]},
+          {name:"start_date",label:"Start Date",type:"date",required:true},
+          {name:"end_date",label:"End Date",type:"date",required:true},
+          {name:"status",label:"Status",type:"select",options:["Pending","Approved","Rejected"]},
+          {name:"reason",label:"Reason",type:"textarea"}
+        ],
+        columns:[
+          {key:"employee_id",label:"Employee",render:v=>employeeName(v)},
+          {key:"type",label:"Type",render:v=>pill(v)},
+          {key:"start_date",label:"Start",render:v=>fmtDate(v)},
+          {key:"end_date",label:"End",render:v=>fmtDate(v)},
+          {key:"status",label:"Status",render:v=>statusPill(v)},
+          {key:"reason",label:"Reason"}
+        ]
+      },
+      payroll: {
+        title:"Payroll",
+        endpoint:"/api/payroll",
+        filters:[["status","Status"],["employee_id","Employee"],["pay_period","Period"]],
+        fields:[
+          {name:"employee_id",label:"Employee",type:"select",source:"employees",text:"fullName",required:true,onchange:"fillSalaryFromEmployee"},
+          {name:"pay_period",label:"Pay Period",type:"month",required:true},
+          {name:"basic_salary",label:"Basic Salary",type:"number",step:"0.01",required:true},
+          {name:"allowances",label:"Allowances",type:"number",step:"0.01"},
+          {name:"deductions",label:"Deductions",type:"number",step:"0.01"},
+          {name:"payment_date",label:"Payment Date",type:"date"},
+          {name:"status",label:"Status",type:"select",options:["Draft","Generated","Paid"]},
+          {name:"net_salary",label:"Net Salary",type:"number",step:"0.01"}
+        ],
+        columns:[
+          {key:"employee_id",label:"Employee",render:v=>employeeName(v)},
+          {key:"pay_period",label:"Period"},
+          {key:"basic_salary",label:"Basic",render:v=>money(v)},
+          {key:"allowances",label:"Allowances",render:v=>money(v)},
+          {key:"deductions",label:"Deductions",render:v=>money(v)},
+          {key:"net_salary",label:"Net",render:v=>money(v)},
+          {key:"status",label:"Status",render:v=>statusPill(v)}
+        ]
+      }
+    };
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      document.getElementById("loginForm").addEventListener("submit", login);
+      document.getElementById("logoutBtn").addEventListener("click", logout);
+      document.getElementById("globalAddBtn").addEventListener("click", () => {
+        if(currentRoute !== "dashboard") openModal(currentRoute);
+      });
+
+      renderNav();
+      if(localStorage.getItem("jg_token")) showApp(); else showLogin();
+      lucide.createIcons();
+    });
+
+    function renderNav(){
+      const nav = document.getElementById("nav");
+      nav.innerHTML = routes.map(r => `
+        <button data-route="${r[0]}" onclick="navigate('${r[0]}')">
+          <i data-lucide="${r[2]}"></i><span>${r[1]}</span>
+        </button>
+      `).join("");
+    }
+
+    async function login(e){
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+      const res = await fetch("/api/login", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({email,password})
+      });
+      const data = await res.json();
+      if(!res.ok){ toast(data.error || "Invalid login"); return; }
+      localStorage.setItem("jg_token", data.token);
+      showApp();
+    }
+
+    function logout(){
+      localStorage.removeItem("jg_token");
+      showLogin();
+    }
+
+    async function showApp(){
+      document.getElementById("loginView").classList.add("hidden");
+      document.getElementById("appView").classList.remove("hidden");
+      await loadAll();
+      renderSections();
+      navigate(currentRoute);
+    }
+
+    function showLogin(){
+      document.getElementById("appView").classList.add("hidden");
+      document.getElementById("loginView").classList.remove("hidden");
+      lucide.createIcons();
+    }
+
+    async function api(path, opts={}){
+      const headers = {"Content-Type":"application/json", ...(opts.headers||{})};
+      const res = await fetch(path, {...opts, headers});
+      const text = await res.text();
+      const data = text ? JSON.parse(text) : {};
+      if(!res.ok) throw new Error(data.error || "Request failed");
+      return data;
+    }
+
+    async function loadAll(){
+      const keys = ["departments","positions","employees","attendance","leaves","payroll"];
+      await Promise.all(keys.map(async k => {
+        cache[k] = await api(configs[k].endpoint);
+      }));
+      populateDashboardFilters();
+    }
+
+    function renderSections(){
+      Object.keys(configs).forEach(entity => renderCrudSection(entity));
+      lucide.createIcons();
+    }
+
+    function navigate(route){
+      currentRoute = route;
+      routes.forEach(r => {
+        const active = r[0] === route;
+        document.getElementById(r[0]).classList.toggle("active", active);
+        const btn = document.querySelector(`[data-route="${r[0]}"]`);
+        if(btn) btn.classList.toggle("active", active);
+        if(active){
+          document.getElementById("pageTitle").textContent = r[1];
+          document.getElementById("pageSubtitle").textContent = r[3];
+        }
+      });
+      document.getElementById("globalAddBtn").classList.toggle("hidden", route === "dashboard");
+      if(route === "dashboard") loadDashboard();
+      else renderTable(route);
+      lucide.createIcons();
+    }
+
+    function renderCrudSection(entity){
+      const cfg = configs[entity];
+      const section = document.getElementById(entity);
+      section.innerHTML = `
+        <div class="toolbar">
+          <input id="${entity}Search" placeholder="Search ${entity}..." oninput="renderTable('${entity}')">
+          <select id="${entity}Filter1" onchange="renderTable('${entity}')">${filterOptions(entity,0)}</select>
+          <select id="${entity}Filter2" onchange="renderTable('${entity}')">${filterOptions(entity,1)}</select>
+          <button class="btn btn-primary" onclick="openModal('${entity}')"><i data-lucide="plus"></i> Add ${cfg.title}</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                ${cfg.columns.map(c=>`<th>${c.label}</th>`).join("")}
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="${entity}Tbody"></tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function filterOptions(entity, idx){
+      const cfg = configs[entity];
+      const f = cfg.filters[idx];
+      if(!f) return `<option value="">All</option>`;
+      const [key,label] = f;
+      let opts = `<option value="">All ${label}</option>`;
+      if(key === "department_id") opts += cache.departments.map(d=>`<option value="${d.id}">${escapeHtml(d.name)}</option>`).join("");
+      else if(key === "position_id") opts += cache.positions.map(p=>`<option value="${p.id}">${escapeHtml(p.title)}</option>`).join("");
+      else if(key === "employee_id") opts += cache.employees.map(e=>`<option value="${e.id}">${escapeHtml(fullName(e))}</option>`).join("");
+      else {
+        const values = [...new Set((cache[entity]||[]).map(x=>x[key]).filter(Boolean))];
+        opts += values.map(v=>`<option value="${escapeHtml(String(v))}">${escapeHtml(String(v))}</option>`).join("");
+      }
+      return opts;
+    }
+
+    function renderTable(entity){
+      const cfg = configs[entity];
+      const tbody = document.getElementById(`${entity}Tbody`);
+      if(!tbody) return;
+      const q = (document.getElementById(`${entity}Search`)?.value || "").toLowerCase();
+      const f1 = document.getElementById(`${entity}Filter1`)?.value || "";
+      const f2 = document.getElementById(`${entity}Filter2`)?.value || "";
+      const filterKeys = cfg.filters.map(f=>f[0]);
+
+      let rows = (cache[entity] || []).filter(row => {
+        const blob = JSON.stringify(row).toLowerCase() + " " + denormalizedText(entity,row).toLowerCase();
+        const matchesSearch = !q || blob.includes(q);
+        const matchesF1 = !f1 || String(row[filterKeys[0]] || "") === f1;
+        const matchesF2 = !f2 || String(row[filterKeys[1]] || "") === f2;
+        return matchesSearch && matchesF1 && matchesF2;
+      });
+
+      if(!rows.length){
+        tbody.innerHTML = `<tr><td class="empty" colspan="${cfg.columns.length+1}">No ${entity} found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = rows.map(row => `
+        <tr>
+          ${cfg.columns.map(c=>`<td>${c.render ? c.render(row[c.key], row) : escapeHtml(row[c.key] ?? "")}</td>`).join("")}
+          <td>
+            <div class="table-actions">
+              ${cfg.extraAction ? cfg.extraAction(row) : ""}
+              <button class="icon-btn" onclick="openModal('${entity}', ${row.id})"><i data-lucide="pencil"></i></button>
+              <button class="icon-btn danger" onclick="deleteRow('${entity}', ${row.id})"><i data-lucide="trash-2"></i></button>
+            </div>
+          </td>
+        </tr>
+      `).join("");
+      lucide.createIcons();
+    }
+
+    async function openModal(entity, id=null){
+      editing = {entity,id};
+      const cfg = configs[entity];
+      const row = id ? cache[entity].find(x=>Number(x.id)===Number(id)) : {};
+      const title = `${id ? "Edit" : entity === "payroll" ? "Generate" : "Add"} ${cfg.title}`;
+
+      document.getElementById("modalRoot").innerHTML = `
+        <div class="modal-backdrop" onclick="closeModal(event)">
+          <form class="modal" id="entityForm" onclick="event.stopPropagation()" onsubmit="saveEntity(event)">
+            <div class="modal-head">
+              <h2>${title}</h2>
+              <button type="button" class="icon-btn" onclick="closeModal()"><i data-lucide="x"></i></button>
+            </div>
+            <div class="form-grid">
+              ${cfg.fields.map(f=>fieldHtml(entity,f,row || {})).join("")}
+            </div>
+            <div class="modal-foot">
+              <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+              <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Save</button>
+            </div>
+          </form>
+        </div>
+      `;
+      lucide.createIcons();
+
+      if(entity === "employees"){
+        const input = document.querySelector(`[name="profile_pic_file"]`);
+        input.addEventListener("change", async e => {
+          const file = e.target.files[0];
+          if(!file) return;
+          document.querySelector(`[name="profile_pic"]`).value = await resizeImage(file, 200, 200);
+          toast("Profile picture resized and attached");
+        });
+      }
+
+      if(entity === "payroll"){
+        const emp = document.querySelector(`[name="employee_id"]`);
+        emp.addEventListener("change", fillSalaryFromEmployee);
+        ["basic_salary","allowances","deductions"].forEach(name=>{
+          document.querySelector(`[name="${name}"]`)?.addEventListener("input", computeNetSalary);
+        });
+      }
+    }
+
+    function fieldHtml(entity,f,row){
+      const value = row[f.name] ?? "";
+      const req = f.required ? "required" : "";
+      const common = `name="${f.name}" ${req}`;
+      const full = f.type === "textarea" || f.type === "file" ? "full" : "";
+      if(f.type === "textarea"){
+        return `<div class="field ${full}"><label>${f.label}</label><textarea ${common}>${escapeHtml(value)}</textarea></div>`;
+      }
+      if(f.type === "select"){
+        let opts = `<option value="">Select ${f.label}</option>`;
+        if(f.source){
+          opts += cache[f.source].map(item => {
+            const txt = f.text === "fullName" ? fullName(item) : item[f.text];
+            return `<option value="${item.id}" ${String(value)===String(item.id)?"selected":""}>${escapeHtml(txt)}</option>`;
+          }).join("");
+        } else {
+          opts += f.options.map(o=>`<option value="${o}" ${String(value)===o?"selected":""}>${o}</option>`).join("");
+        }
+        return `<div class="field"><label>${f.label}</label><select ${common}>${opts}</select></div>`;
+      }
+      if(f.type === "file"){
+        return `
+          <div class="field full">
+            <label>${f.label}</label>
+            <input type="file" accept="image/*" name="profile_pic_file">
+            <input type="hidden" name="profile_pic" value="${escapeAttr(value)}">
+            <small style="color:#6B7280">Images are resized in-browser to max 200x200px and stored as Base64.</small>
+          </div>`;
+      }
+      return `<div class="field ${full}"><label>${f.label}</label><input type="${f.type}" step="${f.step || ""}" ${common} value="${escapeAttr(value)}"></div>`;
+    }
+
+    async function saveEntity(e){
+      e.preventDefault();
+      const {entity,id} = editing;
+      const cfg = configs[entity];
+      const fd = new FormData(e.target);
+      const payload = {};
+      cfg.fields.forEach(f => {
+        if(f.type === "file"){
+          const v = fd.get("profile_pic");
+          payload.profile_pic = v || DEFAULT_AVATAR;
+        } else {
+          const raw = fd.get(f.name);
+          if(raw !== null && raw !== "") payload[f.name] = ["salary","basic_salary","allowances","deductions","net_salary"].includes(f.name) ? Number(raw) : raw;
+          else payload[f.name] = null;
+        }
+      });
+
+      if(entity === "payroll"){
+        const b = Number(payload.basic_salary || 0), a = Number(payload.allowances || 0), d = Number(payload.deductions || 0);
+        payload.net_salary = Number((b + a - d).toFixed(2));
+      }
+
+      try{
+        if(id) await api(`${cfg.endpoint}/${id}`, {method:"PUT", body:JSON.stringify(payload)});
+        else await api(cfg.endpoint, {method:"POST", body:JSON.stringify(payload)});
+        await loadAll();
+        renderSections();
+        renderTable(entity);
+        closeModal();
+        toast(`${cfg.title} saved`);
+      }catch(err){ toast(err.message); }
+    }
+
+    async function deleteRow(entity,id){
+      if(!confirm(`Delete this ${configs[entity].title.toLowerCase()}?`)) return;
+      try{
+        await api(`${configs[entity].endpoint}/${id}`, {method:"DELETE"});
+        await loadAll();
+        renderSections();
+        renderTable(entity);
+        toast("Deleted");
+      }catch(err){ toast(err.message); }
+    }
+
+    function closeModal(ev){
+      if(ev && ev.target !== ev.currentTarget) return;
+      document.getElementById("modalRoot").innerHTML = "";
+      editing = null;
+    }
+
+    function openAssignModal(positionId){
+      const pos = cache.positions.find(p=>Number(p.id)===Number(positionId));
+      document.getElementById("modalRoot").innerHTML = `
+        <div class="modal-backdrop" onclick="closeModal(event)">
+          <form class="modal" onclick="event.stopPropagation()" onsubmit="assignEmployee(event, ${positionId})">
+            <div class="modal-head">
+              <h2>Assign Employee to ${escapeHtml(pos?.title || "Position")}</h2>
+              <button type="button" class="icon-btn" onclick="closeModal()"><i data-lucide="x"></i></button>
+            </div>
+            <div class="field">
+              <label>Employee</label>
+              <select name="employee_id" required>
+                <option value="">Select employee</option>
+                ${cache.employees.map(e=>`<option value="${e.id}">${escapeHtml(fullName(e))} — ${escapeHtml(e.email || "")}</option>`).join("")}
+              </select>
+            </div>
+            <div class="modal-foot">
+              <button type="button" class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+              <button class="btn btn-primary"><i data-lucide="user-plus"></i> Assign</button>
+            </div>
+          </form>
+        </div>`;
+      lucide.createIcons();
+    }
+
+    async function assignEmployee(e, positionId){
+      e.preventDefault();
+      const employeeId = new FormData(e.target).get("employee_id");
+      try{
+        await api(`/api/employees/${employeeId}`, {method:"PUT", body:JSON.stringify({position_id:positionId})});
+        await loadAll();
+        renderSections();
+        renderTable("positions");
+        closeModal();
+        toast("Employee assigned");
+      }catch(err){ toast(err.message); }
+    }
+
+    function fillSalaryFromEmployee(){
+      const empId = document.querySelector(`[name="employee_id"]`)?.value;
+      const emp = cache.employees.find(e=>String(e.id)===String(empId));
+      const salary = document.querySelector(`[name="basic_salary"]`);
+      if(emp && salary){
+        salary.value = Number(emp.salary || 0);
+        computeNetSalary();
+      }
+    }
+
+    function computeNetSalary(){
+      const b = Number(document.querySelector(`[name="basic_salary"]`)?.value || 0);
+      const a = Number(document.querySelector(`[name="allowances"]`)?.value || 0);
+      const d = Number(document.querySelector(`[name="deductions"]`)?.value || 0);
+      const n = document.querySelector(`[name="net_salary"]`);
+      if(n) n.value = (b+a-d).toFixed(2);
+    }
+
+    async function loadDashboard(){
+      try{
+        const data = await api("/api/dashboard/stats");
+        renderStats(data.cards);
+        renderDashboardList(data.employees_by_position || []);
+        drawChart("hiringChart","bar",data.hiring_trend.labels,data.hiring_trend.values,["#7C3AED"],{plugins:{legend:{display:false}}});
+        drawChart("deptChart","doughnut",data.department_mix.labels,data.department_mix.values,colors);
+        drawChart("attendanceChart","line",data.attendance_trend.labels,data.attendance_trend.values,["#4F46E5"],{plugins:{legend:{display:false}},tension:.4});
+        drawChart("statusChart","doughnut",data.status_breakdown.labels,data.status_breakdown.values,["#22C55E","#F59E0B","#EF4444","#06B6D4"]);
+      }catch(err){ toast(err.message); }
+    }
+
+    function renderStats(cards){
+      const defs = [
+        ["Employees", cards.employees || 0, "users", "blue"],
+        ["Departments", cards.departments || 0, "building-2", "green"],
+        ["Positions", cards.positions || 0, "badge-check", "orange"],
+        ["On Leave", cards.on_leave || 0, "plane", "pink"],
+        ["Payroll Total", money(cards.payroll_total || 0), "wallet", "cyan"]
+      ];
+      document.getElementById("statCards").innerHTML = defs.map(d=>`
+        <div class="stat ${d[3]}">
+          <i data-lucide="${d[2]}"></i>
+          <div class="value">${d[1]}</div>
+          <div class="label">${d[0]}</div>
+        </div>
+      `).join("");
+      lucide.createIcons();
+    }
+
+    function renderDashboardList(rows){
+      const q = (document.getElementById("dashboardSearch")?.value || "").toLowerCase();
+      const status = document.getElementById("dashboardStatusFilter")?.value || "";
+      const dept = document.getElementById("dashboardDeptFilter")?.value || "";
+      rows = rows.filter(r => {
+        const okQ = !q || `${r.name} ${r.position}`.toLowerCase().includes(q);
+        const emp = cache.employees.find(e => fullName(e) === r.name);
+        const okStatus = !status || emp?.status === status;
+        const okDept = !dept || String(emp?.department_id || "") === dept;
+        return okQ && okStatus && okDept;
+      });
+      document.getElementById("positionEmployeeList").innerHTML = rows.length ? rows.map((r,i)=>`
+        <div class="mini-person">
+          <img class="avatar" src="${escapeAttr(r.profile_pic || DEFAULT_AVATAR)}" onerror="this.src='${DEFAULT_AVATAR}'">
+          <div style="flex:1">
+            <div style="font-weight:900">${escapeHtml(r.name)}</div>
+            <small style="color:#6B7280">${escapeHtml(r.email || "")}</small>
+          </div>
+          <span class="pill ${pillClasses[i%pillClasses.length]}">${escapeHtml(r.position || "Unassigned")}</span>
+        </div>
+      `).join("") : `<div class="empty">No employees match the dashboard filters.</div>`;
+    }
+
+    function drawChart(id,type,labels,values,palette,extra={}){
+      if(charts[id]) charts[id].destroy();
+      const ctx = document.getElementById(id);
+      charts[id] = new Chart(ctx, {
+        type,
+        data:{
+          labels,
+          datasets:[{
+            data:values,
+            backgroundColor:type==="line" ? "rgba(79,70,229,.12)" : palette,
+            borderColor:palette[0],
+            borderWidth: type==="line" ? 3 : 1,
+            fill:type==="line"
+          }]
+        },
+        options:{
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{legend:{position:"bottom"}},
+          scales: type==="doughnut" ? {} : {y:{beginAtZero:true,grid:{color:"#F3F4F6"}},x:{grid:{display:false}}},
+          ...extra
+        }
+      });
+    }
+
+    function populateDashboardFilters(){
+      const el = document.getElementById("dashboardDeptFilter");
+      if(el) el.innerHTML = `<option value="">All departments</option>` + cache.departments.map(d=>`<option value="${d.id}">${escapeHtml(d.name)}</option>`).join("");
+      document.getElementById("dashboardSearch")?.addEventListener("input", () => loadDashboard());
+      document.getElementById("dashboardStatusFilter")?.addEventListener("change", () => loadDashboard());
+      document.getElementById("dashboardDeptFilter")?.addEventListener("change", () => loadDashboard());
+    }
+
+    function resizeImage(file,maxW,maxH){
+      return new Promise((resolve,reject)=>{
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const img = new Image();
+          img.onload = () => {
+            let {width,height} = img;
+            const ratio = Math.min(maxW/width, maxH/height, 1);
+            width = Math.round(width*ratio);
+            height = Math.round(height*ratio);
+            const canvas = document.createElement("canvas");
+            canvas.width = width; canvas.height = height;
+            canvas.getContext("2d").drawImage(img,0,0,width,height);
+            resolve(canvas.toDataURL("image/jpeg", .86));
+          };
+          img.onerror = reject;
+          img.src = ev.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function assignedEmployees(positionId){
+      const emps = cache.employees.filter(e=>Number(e.position_id)===Number(positionId));
+      if(!emps.length) return `<span class="pill red">None</span>`;
+      return `<div style="display:flex;flex-wrap:wrap;gap:6px">${emps.map((e,i)=>`<span class="pill ${pillClasses[i%pillClasses.length]}">${escapeHtml(fullName(e))}</span>`).join("")}</div>`;
+    }
+
+    function employeeCell(row){
+      return `<div style="display:flex;align-items:center;gap:10px">
+        <img class="avatar sm" src="${escapeAttr(row.profile_pic || DEFAULT_AVATAR)}" onerror="this.src='${DEFAULT_AVATAR}'">
+        <div><strong>${escapeHtml(fullName(row))}</strong><br><small style="color:#6B7280">${escapeHtml(row.phone || "")}</small></div>
+      </div>`;
+    }
+
+    function statusPill(v){
+      const val = v || "Unknown";
+      const low = String(val).toLowerCase();
+      let cls = low.includes("active") || low.includes("present") || low.includes("approved") || low.includes("paid") ? "green" :
+                low.includes("pending") || low.includes("late") || low.includes("draft") || low.includes("generated") ? "orange" :
+                low.includes("absent") || low.includes("rejected") || low.includes("inactive") ? "red" : "blue";
+      return `<span class="pill ${cls}">${escapeHtml(val)}</span>`;
+    }
+
+    function pill(v){ return `<span class="pill">${escapeHtml(v || "N/A")}</span>`; }
+    function fullName(e){ return `${e.first_name || ""} ${e.last_name || ""}`.trim() || "Unnamed"; }
+    function employeeName(id){ const e = cache.employees.find(x=>String(x.id)===String(id)); return e ? fullName(e) : "Unknown"; }
+    function nameById(entity,id,key){ const x = cache[entity].find(i=>String(i.id)===String(id)); return x ? x[key] : ""; }
+    function money(v){ return new Intl.NumberFormat(undefined,{style:"currency",currency:"USD"}).format(Number(v || 0)); }
+    function fmtDate(v){ return v ? new Date(v).toLocaleDateString() : ""; }
+    function denormalizedText(entity,row){
+      if(entity==="employees") return `${nameById("departments",row.department_id,"name")} ${nameById("positions",row.position_id,"title")}`;
+      if(["attendance","leaves","payroll"].includes(entity)) return employeeName(row.employee_id);
+      if(entity==="positions") return `${nameById("departments",row.department_id,"name")} ${assignedEmployees(row.id).replace(/<[^>]*>/g,"")}`;
+      return "";
+    }
+    function escapeHtml(v){ return String(v ?? "").replace(/[&<>"']/g, m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m])); }
+    function escapeAttr(v){ return escapeHtml(v).replace(/`/g,"&#096;"); }
+    function toast(msg){
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.remove("hidden");
+      setTimeout(()=>el.classList.add("hidden"), 2800);
+    }
+  </script>
+</body>
+</html>
